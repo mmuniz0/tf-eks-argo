@@ -1,0 +1,15 @@
+# Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+#modulos terraform
+main/.terraform/
+#kubectl
+main/kube_*
+#tf locks
+main/.terraform.lock.hcl
+.terraform*
+.terraform/*
+./terraform*
