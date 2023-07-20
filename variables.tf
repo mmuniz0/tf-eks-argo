@@ -10,3 +10,11 @@ variable "vpc_id" {
   type        = string
 }
 
+variable "argo-domain" {
+  description = "Argocd domain"
+  type        = string
+}
+variable "branch" {
+  description = "Argocd manifest branch"
+  type        = string
+}

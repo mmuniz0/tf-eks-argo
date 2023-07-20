@@ -1,20 +1,26 @@
 module "eks" {
   source                        = "../modules/eks"
-  #complete this urgent
+  cluster_name = var.cluster_name
+  vpc_id = var.vpc_id
 }
 
 module "argocd" {
   source                        = "../modules/argocd"
-  app = "api"
+  argo-domain = var.argo-domain
   #complete this urgent
 }
 
-module "argocd" {
-  source                        = "../modules/argocd"
-  app = "static"
+module "argo-apps" {
+  source                        = "../modules/argo-apps"
+  branch = var.branch
   #complete this urgent
 }
 
+module "argo-apps" {
+  source                        = "../modules/argo-apps"
+  branch = var.branch
+  #complete this urgent
+}
 # #################################################################################################################################################
 # # EKS cluster and node group
 # module "eks_cluster" {

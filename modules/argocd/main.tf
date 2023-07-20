@@ -12,7 +12,7 @@ resource "helm_release" "argocd" {
   }
   set {
     name  = "server.ingress.hosts[0].name"
-    value = "argocd.example.com" # Replace with your domain
+    value = var.argo-domain # Replace with your domain
   }
   set {
     name  = "server.extraArgs[0]"
@@ -20,13 +20,7 @@ resource "helm_release" "argocd" {
   }
 }
 
-resource "kubernetes_manifest" "argocd_app_api" {
-  yaml_body = file("../../argo-manifests/api/${var.branch}/api.yaml")
-}
 
-resource "kubernetes_manifest" "argocd_app_static" {
-  yaml_body = file("../../argo-manifests/static/${var.branch}/static.yaml")
-}
 
 # # ArgoCD App Sync, using the argocd cli I can re use the code to create the Argo Apps, pther way to do that is creating yaml crds for argocd apps but I'll need one yaml for each app environment
 # resource "null_resource" "argocd_app_api" {
