@@ -3,18 +3,18 @@
 terraform {
   required_providers {
     aws = {
-      source = "hashicorp/aws"
+      source  = "hashicorp/aws"
       version = "3.59.0" # Use the latest version
     }
     helm = {
-      source = "hashicorp/helm"
+      source  = "hashicorp/helm"
       version = "2.3.0" # Use the latest version
     }
   }
 }
 
 provider "aws" {
-  region = "us-west-2" # Replace with your desired AWS region
+  region = "us-east-2" # Replace with your desired AWS region
 }
 
 provider "helm" {

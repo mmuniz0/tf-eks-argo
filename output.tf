@@ -1,3 +1,3 @@
-output "eks_cluster_endpoint" {
-  value = module.eks_cluster.eks_cluster_endpoint
-}
+# output "eks_cluster_endpoint" {
+#   value = module.eks.eks_cluster_endpoint
+# }
