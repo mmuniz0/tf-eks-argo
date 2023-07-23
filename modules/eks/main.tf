@@ -4,7 +4,7 @@ module "eks_cluster" {
   cluster_version = "1.24"
 
   cluster_name = var.cluster_name
-  subnets      = [aws_subnet.private.*.id]
+  subnets      = var.subnets_ids
 
   tags = {
     Environment = terraform.workspace
@@ -17,7 +17,7 @@ module "eks_cluster" {
       name                 = "worker-group"
       instance_type        = "m5.large"
       asg_desired_capacity = 2
-      additional_security_group_ids = [aws_security_group.eks_cluster.id]
+      additional_security_group_ids = var.sg_id
     }
   ]
 
@@ -38,5 +38,31 @@ resource "aws_security_group_rule" "allow_worker_lb_ingress" {
   to_port     = 65535
   protocol    = "tcp"
   cidr_blocks = ["0.0.0.0/0"] 
-  security_group_id = aws_security_group.eks_cluster.id
+  security_group_id = var.sg_id
+}
+
+
+# IAM Role for EKS Cluster
+resource "aws_iam_role" "eks_cluster" {
+  name = "eks-cluster-role"
+
+  # Assume role policy document
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "eks.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
+# IAM Role Policy for EKS Cluster
+resource "aws_iam_role_policy_attachment" "eks_cluster_attachment" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+  role       = aws_iam_role.eks_cluster.name
 }

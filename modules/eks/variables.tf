@@ -10,3 +10,11 @@ variable "vpc_id" {
   type        = string
 }
 
+variable "subnets_ids" {
+  description = "ID of the VPC to associate with the EKS cluster"
+  type        = list
+}
+variable "sg_id" {
+  description = "ID of the VPC to associate with the EKS cluster"
+  type        = string
+}

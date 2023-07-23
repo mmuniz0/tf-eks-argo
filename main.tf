@@ -1,7 +1,18 @@
+module "vpc" {
+  source = "./modules/vpc"  
+
+  vpc_cidr           = "10.0.0.0/16"
+  public_subnet_cidr  = "10.0.1.0/24"
+  private_subnet_cidr = "10.0.2.0/24"
+  availability_zone  = "us-west-2a"
+}
+
 module "eks" {
   source       = "./modules/eks"
   cluster_name = var.cluster_name
-  vpc_id       = var.vpc_id
+  vpc_id       = module.vpc.main-id
+  subnets_ids  = module.vpc.subnets_ids
+  sg_id        = module.vpc.sg_id
 }
 
 module "argocd" {
