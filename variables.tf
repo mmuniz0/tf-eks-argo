@@ -37,3 +37,4 @@ variable "availability_zone" {
   description = "private cidr of the subnet to associate with the EKS cluster"
   type        = string
 }
+

@@ -1,0 +1,14 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProyect
+metadata:
+  name: static-dev
+  namespace: argocd
+spec:
+  project: default
+  sourceRepos:
+    - repoURL: https://github.com/your/repo.git
+      path: static
+      targetRevision: dev
+  destinations:
+    - server: 'https://kubernetes.default.svc'
+      namespace: static

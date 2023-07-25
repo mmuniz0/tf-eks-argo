@@ -22,6 +22,7 @@ resource "helm_release" "argocd" {
 
 
 
+
 # # ArgoCD App Sync, using the argocd cli I can re use the code to create the Argo Apps, pther way to do that is creating yaml crds for argocd apps but I'll need one yaml for each app environment
 # resource "null_resource" "argocd_app_api" {
 #   depends_on = [helm_release.argocd]

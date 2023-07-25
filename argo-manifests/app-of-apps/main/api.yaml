@@ -1,0 +1,14 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProyect
+metadata:
+  name: api-prod
+  namespace: argocd
+spec:
+  project: default
+  sourceRepos:
+    - repoURL: https://github.com/mmuniz0/gitops-apps.git
+      path: api
+      targetRevision: main
+  destinations:
+    - server: 'https://kubernetes.default.svc'
+      namespace: static

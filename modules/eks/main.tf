@@ -1,4 +1,6 @@
-module "eks_cluster" {
+data "aws_availability_zones" "available" {}
+
+module "eks" {
   source = "terraform-aws-modules/eks/aws"
   version = "17.4.0" 
   cluster_version = "1.24"
@@ -31,6 +33,37 @@ module "eks_cluster" {
 
 }
 
+module "eks_blueprints_addons" {
+  # Users should pin the version to the latest available release
+  # tflint-ignore: terraform_module_pinned_source
+  source = "github.com/aws-ia/terraform-aws-eks-blueprints?ref=v4.32.1"
+
+  eks_cluster_id        = module.eks.cluster_id
+  eks_cluster_endpoint  = module.eks.cluster_endpoint
+  eks_cluster_version   = module.eks.cluster_version
+  # eks_oidc_provider     = module.eks.oidc_provider
+  # eks_oidc_provider_arn = module.eks.oidc_provider_arn
+  enable_argocd = true
+  argocd_helm_config = {
+    name             = "argo-cd"
+    chart            = "argo-cd"
+    repository       = "https://argoproj.github.io/argo-helm"
+    version          = "5.41.1"
+    namespace        = "argocd"
+    timeout          = "1200"
+    create_namespace = true
+    #values = [templatefile("${path.module}/argocd-values.yaml", {})]
+  }
+
+  argocd_applications = {
+    workloads = {
+      name = "api-${terraform.workspace}"
+      repository = "https://github.com/mmuniz0/tf-eks-argo.git"
+      path = "/argo-manifest/app-of-apps/${var.branch}"
+    }
+  }
+}
+
 # Allow EKS nodes to access the LoadBalancer
 resource "aws_security_group_rule" "allow_worker_lb_ingress" {
   type        = "ingress"
@@ -61,8 +94,3 @@ resource "aws_iam_role" "eks_cluster" {
   })
 }
 
-# IAM Role Policy for EKS Cluster
-resource "aws_iam_role_policy_attachment" "eks_cluster_attachment" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
-  role       = aws_iam_role.eks_cluster.name
-}
