@@ -31,7 +31,7 @@ module "eks" {
 
   eks_managed_node_groups = {
     initial = {
-      instance_types = ["t2.micro"]
+      instance_types = ["m5.large"]
 
       min_size     = 1
       max_size     = 1
