@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/your/repo.git
+    repoURL: https://github.com/mmuniz0/gitops-apps.git
     path: static
     targetRevision: dev
   destination:

@@ -1,12 +1,12 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: api
+  name: api-stage
   namespace: argocd
 spec:
   project: default
   source:
-    repoURL: https://github.com/your/repo.git
+    repoURL: https://github.com/mmuniz0/gitops-apps.git
     path: api
     targetRevision: stage
   destination:

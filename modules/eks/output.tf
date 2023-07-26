@@ -4,10 +4,6 @@ output "eks_host" {
   value       = module.eks.cluster_endpoint
 }
 
-# output "eks_token" {
-#   description = "Kubernetes Cluster token"
-#   value       = data.aws_eks_cluster_auth.cluster.token
-# }
 
 output "eks_ca_certificate" {
   description = "Kubernetes Cluster CA certificate"

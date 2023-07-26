@@ -11,4 +11,4 @@ spec:
       targetRevision: main
   destinations:
     - server: 'https://kubernetes.default.svc'
-      namespace: static
+      namespace: api

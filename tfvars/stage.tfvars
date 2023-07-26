@@ -1,5 +1,3 @@
-# production.tfvars
-
 cluster_name = "stage-cluster"
-vpc_id = "vpc-xxxxx"
-stage = "stage"
+branch = "stage"
+vpc_cidr = "10.2.0.0/16"
