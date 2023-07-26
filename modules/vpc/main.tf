@@ -1,102 +1,36 @@
-# vpc/main.tf
-
-provider "aws" {
-  region = "us-east-2"
-}
-
-# Create the VPC
-resource "aws_vpc" "main" {
-  cidr_block = var.vpc_cidr
+data "aws_availability_zones" "available" {}
+locals {
+  name   = terraform.workspace
+  vpc_cidr = var.vpc_cidr
+  azs      = slice(data.aws_availability_zones.available.names, 0, 3)
   tags = {
-    Name = terraform.workspace
+    Blueprint  = local.name
+    GithubRepo = "github.com/aws-ia/terraform-aws-eks-blueprints"
   }
 }
 
-# Create public subnet
-resource "aws_subnet" "public" {
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = var.public_subnet_cidr
-  availability_zone = var.availability_zone
 
-  tags = {
-    Name = "public-subnet-${terraform.workspace}"
-  }
-}
+module "vpc" {
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "~> 5.0"
 
-# Create private subnet
-resource "aws_subnet" "private" {
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = var.private_subnet_cidr
-  availability_zone = var.availability_zone
+  name = local.name
+  cidr = local.vpc_cidr
 
-  tags = {
-    Name = "private-subnet${terraform.workspace}"
-  }
-}
+  azs             = local.azs
+  private_subnets = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 4, k)]
+  public_subnets  = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 48)]
 
-# Create an Internet Gateway to provide internet access to instances in public subnet
-resource "aws_internet_gateway" "gw" {
-  vpc_id = aws_vpc.main.id
+  enable_nat_gateway = true
+  single_nat_gateway = true
 
-  tags = {
-    Name = "internet-gateway"
-  }
-}
-
-# Attach the Internet Gateway to the VPC
-# resource "aws_vpc_attachment" "gw_attachment" {
-#   vpc_id             = aws_vpc.main.id
-#   internet_gateway_id = aws_internet_gateway.gw.id
-# }
-
-# Create a route table for public subnet
-resource "aws_route_table" "public_route_table" {
-  vpc_id = aws_vpc.main.id
-
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.gw.id
+  public_subnet_tags = {
+    "kubernetes.io/role/elb" = 1
   }
 
-  tags = {
-    Name = "public-route-table"
-  }
-}
-
-# Associate the public subnet with the public route table
-resource "aws_route_table_association" "public_association" {
-  subnet_id      = aws_subnet.public.id
-  route_table_id = aws_route_table.public_route_table.id
-}
-
-# Create a security group for the EKS cluster
-resource "aws_security_group" "eks_cluster_sg" {
-  name_prefix = "eks-cluster-sg-"
-  vpc_id      = aws_vpc.main.id
-
-  # Ingress rule to allow incoming traffic from within the VPC (EKS worker nodes)
-  ingress {
-    description      = "Allow incoming traffic within the VPC"
-    from_port        = 0
-    to_port          = 65535
-    protocol         = "tcp"
-#   security_groups  = [aws_security_group.eks_cluster_sg.id]
-    self             = true
+  private_subnet_tags = {
+    "kubernetes.io/role/internal-elb" = 1
   }
 
-  # Add any additional ingress/egress rules as needed for your use case
+  tags = local.tags
 }
-
-# Output the VPC ID and Subnet IDs for use in other modules
-output "vpc_id" {
-  value = aws_vpc.main.id
-}
-
-output "public_subnet_id" {
-  value = aws_subnet.public.id
-}
-
-output "private_subnet_id" {
-  value = aws_subnet.private.id
-}
- 

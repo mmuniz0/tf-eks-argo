@@ -1,5 +1,5 @@
 # production.tfvars
 
 cluster_name = "dev-cluster"
-vpc_id = "vpc-xxxxx"
-btanch = "dev"
+branch = "main"
+vpc_cidr = "10.1.0.0/16"
