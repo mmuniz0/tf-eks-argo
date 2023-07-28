@@ -34,7 +34,7 @@ module "eks" {
       instance_types = ["m5.large"]
 
       min_size     = 1
-      max_size     = 1
+      max_size     = 2
       desired_size = 1
     }
   }
@@ -61,15 +61,16 @@ module "eks_blueprints_addons" {
   argocd_manage_add_ons = false 
   argocd_applications = {
     workloads = {
-      path               = "envs/dev"
-      repo_url           = "https://github.com/aws-samples/eks-blueprints-workloads.git"
+      path               = "/home/manuel/Repos/tf-eks-argo/argo-manifests/app-of-apps/${var.branch}"
+      repo_url           = "https://github.com/mmuniz0/gitops-apps.git"
       add_on_application = false
+      type               = "kustomize"
     }
   }
 
   # Add-ons
   enable_amazon_eks_aws_ebs_csi_driver = false
-  enable_aws_load_balancer_controller  = false
+  enable_aws_load_balancer_controller  = true
   enable_cert_manager                  = false
   enable_karpenter                     = false
   enable_metrics_server                = false
